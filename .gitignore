@@ -1,0 +1,33 @@
+# Visual Studio local files
+.vs/
+
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docobj
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+!**/packages/build/
+
+# Publish output
+publish/
+**/Properties/PublishProfiles/
+
+# ASP.NET Core
+**/wwwroot/lib/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db

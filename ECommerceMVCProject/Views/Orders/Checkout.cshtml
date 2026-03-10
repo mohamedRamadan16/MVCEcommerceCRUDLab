@@ -1,0 +1,91 @@
+@model CheckoutVM
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-area="" asp-controller="Cart" asp-action="Index">Cart</a></li>
+        <li class="breadcrumb-item active">Checkout</li>
+    </ol>
+</nav>
+
+<h4 class="mb-4">Checkout</h4>
+
+<div class="row g-4">
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header">Order Summary</div>
+            <div class="card-body p-0">
+                <table class="table mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Product</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-end">Price</th>
+                            <th class="text-end pe-3">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Cart.Items)
+                        {
+                            <tr>
+                                <td class="ps-3">@item.ProductName</td>
+                                <td class="text-center">@item.Quantity</td>
+                                <td class="text-end">$@item.UnitPrice.ToString("N2")</td>
+                                <td class="text-end pe-3">$@item.LineTotal.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="3" class="text-end pe-3"><strong>Total</strong></td>
+                            <td class="text-end pe-3"><strong>$@Model.Cart.TotalAmount.ToString("N2")</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">Shipping Address</div>
+            <div class="card-body">
+                @if (!Model.Addresses.Any())
+                {
+                    <div class="alert alert-warning py-2 mb-3">
+                        You need to add a shipping address first.
+                    </div>
+                    <a asp-area="" asp-controller="Addresses" asp-action="Create" class="btn btn-dark w-100">Add Address</a>
+                }
+                else
+                {
+                    <form asp-area="" asp-controller="Orders" asp-action="Checkout" method="post">
+                        @foreach (var address in Model.Addresses)
+                        {
+                            <div class="form-check mb-3 p-3 border rounded @(address.AddressId == Model.SelectedAddressId ? "border-dark bg-light" : "")">
+                                <input class="form-check-input" type="radio" name="selectedAddressId"
+                                       value="@address.AddressId" id="addr@address.AddressId"
+                                       @(address.AddressId == Model.SelectedAddressId ? "checked" : "") required />
+                                <label class="form-check-label ms-1" for="addr@address.AddressId">
+                                    @if (address.IsDefault)
+                                    {
+                                        <span class="badge bg-secondary me-1">Default</span>
+                                    }
+                                    <span class="fw-semibold">@address.Street</span><br />
+                                    <small class="text-muted">@address.City, @address.Zip — @address.Country</small>
+                                </label>
+                            </div>
+                        }
+                        <button type="submit" class="btn btn-dark w-100">Place Order</button>
+                    </form>
+                    <div class="mt-2 text-center">
+                        <a asp-area="" asp-controller="Addresses" asp-action="Create" class="btn btn-link btn-sm text-muted">+ Add new address</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

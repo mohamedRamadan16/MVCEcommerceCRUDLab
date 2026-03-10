@@ -1,0 +1,58 @@
+@model IEnumerable<Order>
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<h4 class="mb-4">My Orders</h4>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        You have no orders yet. <a asp-area="" asp-controller="Catalog" asp-action="Index">Start Shopping</a>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Order Number</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th class="text-end">Total</th>
+                        <th class="text-end pe-3"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td class="ps-3 fw-semibold">@order.OrderNumber</td>
+                            <td class="text-muted">@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                <span class="badge bg-@(order.Status switch
+                                {
+                                    OrderStatus.Pending => "warning",
+                                    OrderStatus.Processing => "info",
+                                    OrderStatus.Shipped => "primary",
+                                    OrderStatus.Delivered => "success",
+                                    OrderStatus.Cancelled => "danger",
+                                    _ => "secondary"
+                                })">@order.Status</span>
+                            </td>
+                            <td class="text-end fw-semibold">$@order.TotalAmount.ToString("N2")</td>
+                            <td class="text-end pe-3">
+                                <a asp-area="" asp-controller="Orders" asp-action="Details" asp-route-id="@order.OrderId"
+                                   class="btn btn-sm btn-outline-dark">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+

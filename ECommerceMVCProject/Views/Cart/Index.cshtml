@@ -1,0 +1,83 @@
+@model CartVM
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<h4 class="mb-4">Shopping Cart</h4>
+
+@if (!Model.Items.Any())
+{
+    <div class="alert alert-info">
+        Your cart is empty. <a asp-area="" asp-controller="Catalog" asp-action="Index">Browse products</a>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body p-0">
+                    <table class="table mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">Product</th>
+                                <th>Unit Price</th>
+                                <th>Qty</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td class="ps-3 fw-semibold">@item.ProductName</td>
+                                    <td class="text-muted">$@item.UnitPrice.ToString("N2")</td>
+                                    <td>
+                                        <form asp-area="" asp-controller="Cart" asp-action="Update" method="post">
+                                            <input type="hidden" name="productId" value="@item.ProductId" />
+                                            <input type="number" name="quantity" value="@item.Quantity" min="1"
+                                                   max="@item.StockQuantity" class="form-control form-control-sm"
+                                                   style="width:75px;" onchange="this.form.submit()" />
+                                        </form>
+                                    </td>
+                                    <td class="fw-semibold">$@item.LineTotal.ToString("N2")</td>
+                                    <td>
+                                        <form asp-area="" asp-controller="Cart" asp-action="Remove" method="post">
+                                            <input type="hidden" name="productId" value="@item.ProductId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">Order Summary</div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Items (@Model.Items.Count)</span>
+                        <span>$@Model.TotalAmount.ToString("N2")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Shipping</span>
+                        <span class="text-success">Free</span>
+                    </div>
+                    <hr class="my-2" />
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total</strong>
+                        <strong class="fs-5">$@Model.TotalAmount.ToString("N2")</strong>
+                    </div>
+                    <a asp-area="" asp-controller="Orders" asp-action="Checkout" class="btn btn-dark w-100 mb-2">Checkout</a>
+                    <a asp-area="" asp-controller="Catalog" asp-action="Index" class="btn btn-outline-secondary w-100">Continue Shopping</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

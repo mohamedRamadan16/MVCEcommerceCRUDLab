@@ -1,0 +1,90 @@
+@model OrderDetailsVM
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-area="" asp-controller="Orders" asp-action="Index">My Orders</a></li>
+        <li class="breadcrumb-item active">@Model.Order.OrderNumber</li>
+    </ol>
+</nav>
+
+<h4 class="mb-4">Order Details</h4>
+
+<div class="row mb-4 g-3">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">Order Information</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5 text-muted">Order Number</dt>
+                    <dd class="col-sm-7">@Model.Order.OrderNumber</dd>
+                    <dt class="col-sm-5 text-muted">Date</dt>
+                    <dd class="col-sm-7">@Model.Order.OrderDate.ToString("MMM dd, yyyy")</dd>
+                    <dt class="col-sm-5 text-muted mb-0">Status</dt>
+                    <dd class="col-sm-7 mb-0">
+                        <span class="badge bg-@(Model.Order.Status switch
+                        {
+                            OrderStatus.Pending => "warning",
+                            OrderStatus.Processing => "info",
+                            OrderStatus.Shipped => "primary",
+                            OrderStatus.Delivered => "success",
+                            OrderStatus.Cancelled => "danger",
+                            _ => "secondary"
+                        })">@Model.Order.Status</span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">Shipping Address</div>
+            <div class="card-body">
+                <p class="mb-1">@Model.Order.ShippingAddress.Street</p>
+                <p class="mb-1 text-muted">@Model.Order.ShippingAddress.City, @Model.Order.ShippingAddress.Zip</p>
+                <p class="mb-0 text-muted">@Model.Order.ShippingAddress.Country</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Order Items</div>
+    <div class="card-body p-0">
+        <table class="table mb-0 align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-3">Product</th>
+                    <th>SKU</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-end">Price</th>
+                    <th class="text-end pe-3">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Order.OrderItems)
+                {
+                    <tr>
+                        <td class="ps-3 fw-semibold">@item.Product.Name</td>
+                        <td class="text-muted">@item.Product.SKU</td>
+                        <td class="text-center">@item.Quantity</td>
+                        <td class="text-end">$@item.UnitPrice.ToString("N2")</td>
+                        <td class="text-end pe-3">$@item.LineTotal.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot class="table-light">
+                <tr>
+                    <td colspan="4" class="text-end pe-3"><strong>Total</strong></td>
+                    <td class="text-end pe-3"><strong class="fs-6">$@Model.Order.TotalAmount.ToString("N2")</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-area="" asp-controller="Orders" asp-action="Index" class="btn btn-outline-secondary">← Back to Orders</a>
+</div>

@@ -1,0 +1,46 @@
+@model IEnumerable<Order>
+@{
+    ViewData["Title"] = "All Orders";
+}
+
+<h2>All Orders</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Order Number</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Total</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.OrderNumber</td>
+                <td>@order.User.FullName</td>
+                <td>@order.OrderDate.ToString("MM/dd/yyyy")</td>
+                <td>
+                    <span class="badge bg-@(order.Status switch 
+                    {
+                        OrderStatus.Pending => "warning",
+                        OrderStatus.Processing => "info",
+                        OrderStatus.Shipped => "primary",
+                        OrderStatus.Delivered => "success",
+                        OrderStatus.Cancelled => "danger",
+                        _ => "secondary"
+                    })">
+                        @order.Status
+                    </span>
+                </td>
+                <td>$@order.TotalAmount.ToString("N2")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@order.OrderId" class="btn btn-sm btn-primary">View</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
